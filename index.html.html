@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Park Circle House-Log</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #0d0f14;
+    --glass-bg: rgba(255, 255, 255, 0.04);
+    --glass-bg-hover: rgba(255, 255, 255, 0.07);
+    --glass-bg-header: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-border-strong: rgba(255, 255, 255, 0.16);
+    --text-primary: #e8eaf0;
+    --text-secondary: #8a8fa8;
+    --text-muted: #555b72;
+    --accent: #7eb8f7;
+    --accent-glow: rgba(126, 184, 247, 0.15);
+    --accent-dim: rgba(126, 184, 247, 0.6);
+    --gold: #d4a843;
+    --gold-glow: rgba(212, 168, 67, 0.2);
+    --status-active-bg: rgba(52, 211, 153, 0.1);
+    --status-active-border: rgba(52, 211, 153, 0.35);
+    --status-active-text: #34d399;
+    --status-contingent-bg: rgba(251, 191, 36, 0.1);
+    --status-contingent-border: rgba(251, 191, 36, 0.35);
+    --status-contingent-text: #fbbf24;
+    --status-pending-bg: rgba(167, 139, 250, 0.1);
+    --status-pending-border: rgba(167, 139, 250, 0.35);
+    --status-pending-text: #a78bfa;
+    --status-sold-bg: rgba(248, 113, 113, 0.1);
+    --status-sold-border: rgba(248, 113, 113, 0.35);
+    --status-sold-text: #f87171;
+    --status-offmarket-bg: rgba(107, 114, 128, 0.12);
+    --status-offmarket-border: rgba(107, 114, 128, 0.3);
+    --status-offmarket-text: #9ca3af;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg-base);
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(62, 99, 180, 0.18) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(100, 60, 160, 0.14) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 30%, rgba(30, 60, 120, 0.1) 0%, transparent 40%);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 52px 36px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #e8eaf0 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .tagline {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    border-left: 2px solid var(--accent-dim);
+    padding-left: 10px;
+    margin-bottom: 36px;
+    margin-top: 8px;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, var(--accent-dim), rgba(126,184,247,0.1), transparent);
+    margin-bottom: 36px;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border-strong);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.4),
+      0 1px 0 rgba(255,255,255,0.06) inset,
+      0 -1px 0 rgba(0,0,0,0.3) inset;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+  }
+
+  thead tr {
+    background: var(--glass-bg-header);
+    border-bottom: 1px solid var(--glass-border-strong);
+  }
+
+  thead th {
+    padding: 16px 18px;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  thead th:first-child { color: var(--gold); }
+
+  tbody tr {
+    border-bottom: 1px solid var(--glass-border);
+    transition: background 0.2s ease;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--glass-bg-hover); }
+
+  td {
+    padding: 18px 18px;
+    vertical-align: middle;
+    line-height: 1.5;
+  }
+
+  td.address {
+    min-width: 190px;
+    vertical-align: top;
+    padding-top: 20px;
+  }
+
+  .addr-street {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.77rem;
+  }
+
+  .addr-city {
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+  }
+
+  td.price {
+    color: var(--accent);
+    font-weight: 500;
+    white-space: nowrap;
+    text-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  td.sqft, td.beds, td.baths {
+    text-align: center;
+    color: var(--text-secondary);
+  }
+
+  td.link a {
+    color: var(--accent-dim);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(126,184,247,0.25);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+
+  td.link a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  td.notes {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    width: 240px;
+    max-width: 240px;
+    font-style: italic;
+    line-height: 1.65;
+    vertical-align: top;
+    padding-top: 20px;
+  }
+
+  .notes-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .notes-text.expanded {
+    display: block;
+    overflow: visible;
+  }
+
+  .notes-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 7px;
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-dim);
+    cursor: pointer;
+    border: 1px solid rgba(126,184,247,0.15);
+    background: rgba(126,184,247,0.05);
+    padding: 3px 8px 3px 6px;
+    font-family: 'DM Mono', monospace;
+    font-style: normal;
+    border-radius: 20px;
+    transition: all 0.18s ease;
+  }
+
+  .notes-toggle:hover {
+    background: rgba(126,184,247,0.12);
+    border-color: rgba(126,184,247,0.3);
+    color: var(--accent);
+  }
+
+  .toggle-arrow {
+    display: inline-block;
+    transition: transform 0.25s ease;
+    font-size: 0.7rem;
+    line-height: 1;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border: 1px solid;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .status-active {
+    background: var(--status-active-bg);
+    border-color: var(--status-active-border);
+    color: var(--status-active-text);
+  }
+  .status-active .status-dot {
+    background: var(--status-active-text);
+    box-shadow: 0 0 6px var(--status-active-text);
+    animation: pulse-green 2s infinite;
+  }
+
+  .status-contingent {
+    background: var(--status-contingent-bg);
+    border-color: var(--status-contingent-border);
+    color: var(--status-contingent-text);
+  }
+  .status-contingent .status-dot { background: var(--status-contingent-text); }
+
+  .status-pending {
+    background: var(--status-pending-bg);
+    border-color: var(--status-pending-border);
+    color: var(--status-pending-text);
+  }
+  .status-pending .status-dot { background: var(--status-pending-text); }
+
+  .status-sold {
+    background: var(--status-sold-bg);
+    border-color: var(--status-sold-border);
+    color: var(--status-sold-text);
+  }
+  .status-sold .status-dot { background: var(--status-sold-text); }
+
+  .status-offmarket {
+    background: var(--status-offmarket-bg);
+    border-color: var(--status-offmarket-border);
+    color: var(--status-offmarket-text);
+  }
+  .status-offmarket .status-dot { background: var(--status-offmarket-text); }
+
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--status-active-text); }
+    50%       { opacity: 0.5; box-shadow: 0 0 2px var(--status-active-text); }
+  }
+
+
+  /* ── Star Rating ── */
+  td.rating {
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  .stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .star {
+    display: inline-block;
+    font-size: 1rem;
+    line-height: 1;
+    position: relative;
+    color: rgba(212,168,67,0.2);
+  }
+
+  .star-full {
+    color: #d4a843;
+    text-shadow: 0 0 8px rgba(212,168,67,0.5);
+  }
+
+  .star-half {
+    position: relative;
+    display: inline-block;
+  }
+
+  .star-half::before {
+    content: '★';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 50%;
+    overflow: hidden;
+    color: #d4a843;
+    text-shadow: 0 0 8px rgba(212,168,67,0.5);
+  }
+
+  .entry-num {
+    font-size: 0.62rem;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 12px var(--gold-glow);
+  }
+
+  .count {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    margin-top: 18px;
+    text-align: right;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<h1>Park Circle House-Log</h1>
+<div class="tagline">Houses in Park Circle, North Charleston SC areas</div>
+<div class="divider"></div>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Status</th>
+        <th>Stars</th>
+        <th>Address</th>
+        <th>Price</th>
+        <th>Sq Ft</th>
+        <th>Beds</th>
+        <th>Baths</th>
+        <th>Link</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="entry-num">01</td>
+        <td><span class="status-badge status-active"><span class="status-dot"></span>Active</span></td>
+        <td class="rating"><div class="stars"><span class="star star-full">★</span><span class="star star-full">★</span><span class="star star-full">★</span><span class="star star-full">★</span><span class="star">★</span></div></td>
+        <td class="address"><span class="addr-street">4901 Ashby Ave</span><br><span class="addr-city">North Charleston, SC 29405</span></td>
+        <td class="price">$649,000</td>
+        <td class="sqft">1,700</td>
+        <td class="beds">3</td>
+        <td class="baths">2</td>
+        <td class="link"><a href="https://www.zillow.com/homedetails/4901-Ashby-Ave-North-Charleston-SC-29405/10915490_zpid/" target="_blank">Zillow →</a></td>
+        <td class="notes">
+          <div class="notes-text">Madi should see this house!! Has quite a few quirks but looks unique, homey, good space and solid location.</div>
+          <button class="notes-toggle" onclick="toggleNote(this)"><span class="toggle-arrow">▾</span> Expand</button>
+        </td>
+      </tr>
+      <tr>
+        <td class="entry-num">02</td>
+        <td><span class="status-badge status-active"><span class="status-dot"></span>Active</span></td>
+        <td class="rating"><div class="stars"><span class="star star-full">★</span><span class="star star-full">★</span><span class="star star-half">★</span><span class="star">★</span><span class="star">★</span></div></td>
+        <td class="address"><span class="addr-street">5349 Parkside Dr</span><br><span class="addr-city">North Charleston, SC 29405</span></td>
+        <td class="price">$495,000</td>
+        <td class="sqft">1,053</td>
+        <td class="beds">3</td>
+        <td class="baths">2</td>
+        <td class="link"><a href="https://www.zillow.com/homedetails/5349-Parkside-Dr-North-Charleston-SC-29405/10915136_zpid/" target="_blank">Zillow →</a></td>
+        <td class="notes">
+          <div class="notes-text">Close to the train tracks in Park Circle, but could be a good investment we clean up and sell in 3-5 years at a larger price, if and when we want to move to Mount Pleasant. Small floor plan and wouldn't be a good place we can raise a family, but could start a family there no problem. Good location that has potential for growth.</div>
+          <button class="notes-toggle" onclick="toggleNote(this)"><span class="toggle-arrow">▾</span> Expand</button>
+        </td>
+      </tr>
+      <tr>
+        <td class="entry-num">03</td>
+        <td><span class="status-badge status-active"><span class="status-dot"></span>Active</span></td>
+        <td class="rating"><div class="stars"><span class="star star-full">★</span><span class="star star-full">★</span><span class="star star-half">★</span><span class="star">★</span><span class="star">★</span></div></td>
+        <td class="address"><span class="addr-street">5124 E Liberty Park Cir</span><br><span class="addr-city">North Charleston, SC 29405</span></td>
+        <td class="price">$535,000</td>
+        <td class="sqft">1,460</td>
+        <td class="beds">4</td>
+        <td class="baths">3</td>
+        <td class="link"><a href="https://www.zillow.com/homedetails/5124-E-Liberty-Park-Cir-North-Charleston-SC-29405/122139445_zpid/" target="_blank">Zillow →</a></td>
+        <td class="notes">
+          <div class="notes-text">Solid single family town house, not much potential to build out and sell at a higher price, but would get us into a good location quick, at a decent price. Been on the market for almost 3 months, so not a hot sell. House purchased last time 7 months ago at $10K under current asking price.</div>
+          <button class="notes-toggle" onclick="toggleNote(this)"><span class="toggle-arrow">▾</span> Expand</button>
+        </td>
+      </tr>
+      <tr>
+        <td class="entry-num">04</td>
+        <td><span class="status-badge status-contingent"><span class="status-dot"></span>Active Contingent</span></td>
+        <td class="rating"><div class="stars"><span class="star star-full">★</span><span class="star star-full">★</span><span class="star star-full">★</span><span class="star star-half">★</span><span class="star">★</span></div></td>
+        <td class="address"><span class="addr-street">1226 Maxwell St</span><br><span class="addr-city">North Charleston, SC 29405</span></td>
+        <td class="price">$549,600</td>
+        <td class="sqft">1,374</td>
+        <td class="beds">3</td>
+        <td class="baths">2</td>
+        <td class="link"><a href="https://www.zillow.com/homedetails/1226-Maxwell-St-North-Charleston-SC-29405/10915099_zpid/" target="_blank">Zillow →</a></td>
+        <td class="notes">
+          <div class="notes-text">Active contingent, but this is a good example of how we'd be able to add value to the house based on the history. Quite a few nice touches that have added value to what seems to be a house in a neighborhood of houses selling at under $100K-$150K of what this one seems to be selling at.</div>
+          <button class="notes-toggle" onclick="toggleNote(this)"><span class="toggle-arrow">▾</span> Expand</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p class="count">4 properties logged</p>
+
+<script>
+  function toggleNote(btn) {
+    const text = btn.previousElementSibling;
+    const isExpanded = text.classList.contains('expanded');
+    text.classList.toggle('expanded');
+    btn.classList.toggle('open', !isExpanded);
+    btn.innerHTML = isExpanded
+      ? '<span class="toggle-arrow">▾</span> Expand'
+      : '<span class="toggle-arrow" style="transform:rotate(180deg)">▾</span> Collapse';
+  }
+</script>
+
+</body>
+</html>
